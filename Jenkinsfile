@@ -2,12 +2,13 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_DIR = '/deploy' // mapped folder shared with Liferay containers
+        DEPLOY_DIR = '/mnt/liferay/data/deploy' // mapped folder in Docker Compose
     }
 
     triggers {
         // Trigger on Git push (webhook)
-        pollSCM('H/2 * * * *') // optional fallback if webhook isn't configured
+        githubPush() // simplified if GitHub webhook is configured
+        // pollSCM('H/2 * * * *') // optional fallback
     }
 
     stages {
@@ -20,16 +21,17 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Example using Maven
-                sh 'mvn clean package'
+                echo 'Building project with Gradle...'
+                sh './gradlew clean build'
             }
         }
 
         stage('Deploy to Liferay') {
             steps {
-                echo "Copying artifacts to deploy folder..."
-                sh 'cp target/*.jar ${DEPLOY_DIR}/'
-                sh 'cp target/*.war ${DEPLOY_DIR}/'
+                echo "Copying artifacts to Liferay deploy folder..."
+                sh 'mkdir -p ${DEPLOY_DIR}'
+                sh 'cp modules/*/build/libs/*.jar ${DEPLOY_DIR}/ || true'
+                sh 'cp modules/*/build/libs/*.war ${DEPLOY_DIR}/ || true'
             }
         }
     }
