@@ -1,0 +1,15 @@
+Bundle-Name: hello-world
+Bundle-SymbolicName: com.example.helloworld
+Bundle-Version: 1.0.0
+
+Web-ContextPath: /hello-world
+
+Export-Package: com.example.helloworld.constants
+
+Import-Package: \
+    javax.portlet;version="[2.0,3.0)", \
+    *
+
+Provide-Capability: \
+    liferay.language.resources; \
+        resource.bundle.base.name="content.Language"
