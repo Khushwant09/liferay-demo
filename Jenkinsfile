@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_DIR = '/deploy'  // This maps to your Liferay containers
+        DEPLOY_DIR = '/deploy'  // Mount this to your Liferay container if needed
+        GRADLE_OPTS = '-Dorg.gradle.daemon=false' // optional for CI builds
     }
 
     triggers {
@@ -10,9 +11,10 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
+                echo 'Checking out code from GitHub...'
                 git branch: 'main',
                     url: 'git@github.com:Khushwant09/liferay-demo.git',
                     credentialsId: 'github-deploy-key'
@@ -22,7 +24,16 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building project with Gradle 8.5...'
-                sh 'gradle clean build'
+                sh '''
+                    # Ensure gradle wrapper is executable
+                    if [ -f ./gradlew ]; then
+                        chmod +x ./gradlew
+                        ./gradlew clean build --no-daemon
+                    else
+                        # Fallback to container-installed Gradle
+                        gradle clean build
+                    fi
+                '''
             }
         }
 
@@ -31,8 +42,12 @@ pipeline {
                 echo 'Copying artifacts to Liferay deploy folder...'
                 sh '''
                     mkdir -p ${DEPLOY_DIR}
-                    cp modules/*/build/libs/*.jar ${DEPLOY_DIR}/ 2>/dev/null || true
-                    cp modules/*/build/libs/*.war ${DEPLOY_DIR}/ 2>/dev/null || true
+                    
+                    # Copy all OSGi modules
+                    find modules -type f -name "*.jar" -exec cp {} ${DEPLOY_DIR}/ \\; || true
+
+                    # Copy WARs for themes/hooks
+                    find modules -type f -name "*.war" -exec cp {} ${DEPLOY_DIR}/ \\; || true
                 '''
             }
         }
