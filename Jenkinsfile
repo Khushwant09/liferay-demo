@@ -15,7 +15,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/your_username/your_repo.git'
+                    url: 'git@github.com:Khushwant09/liferay-demo.git'
+					credentialsId: 'e37faf3c-48de-4292-a211-1090299331a0'
             }
         }
 
