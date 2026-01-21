@@ -10,14 +10,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                sshagent(credentials: ['github-deploy-key']) {
-                    git branch: 'main',
-                        url: 'git@github.com:Khushwant09/liferay-demo.git'
-                }
-            }
-        }
 
         stage('Build') {
             steps {
@@ -35,10 +27,7 @@ pipeline {
                 sh '''
                     mkdir -p ${DEPLOY_DIR}
 
-                    # Copy OSGi modules
                     cp modules/*/build/libs/*.jar ${DEPLOY_DIR}/ 2>/dev/null || true
-
-                    # Copy WARs (themes, hooks, etc.)
                     cp modules/*/build/libs/*.war ${DEPLOY_DIR}/ 2>/dev/null || true
                 '''
             }
@@ -47,10 +36,10 @@ pipeline {
 
     post {
         success {
-            echo 'Build & deploy completed successfully '
+            echo 'Build & deploy completed successfully'
         }
         failure {
-            echo 'Build or deploy failed '
+            echo 'Build or deploy failed'
         }
     }
 }
