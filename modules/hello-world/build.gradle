@@ -1,33 +1,22 @@
-plugins {
-    id 'java'
-    id 'biz.aQute.bnd.builder' version '5.3.0'  // Liferay OSGi builder
-}
-
-// Liferay dependencies
 dependencies {
+    // Liferay API
     compileOnly group: "com.liferay.portal", name: "release.dxp.api"
 
+    // CSS builder
     cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
 }
 
-// Disable default Gradle jar (caused manifest conflicts)
+// Disable default Gradle jar task to avoid invalid manifest
 tasks.named('jar') {
     enabled = false
 }
 
-// Optional: make sure buildBundle produces the correct output
+// Ensure buildBundle depends on compilation
 tasks.named('buildBundle') {
     dependsOn 'compileJava', 'processResources'
 }
 
-// Optional: include CSS build automatically
+// Make build depend on buildBundle
 tasks.named('build') {
     dependsOn 'buildBundle'
-}
-
-// Liferay-specific properties (for Gradle workspace)
-liferay {
-    workspace {
-        modulesDir = file("$rootDir/modules")
-    }
 }

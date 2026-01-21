@@ -30,14 +30,15 @@ pipeline {
         }
 
         stage('Deploy to Liferay') {
-            steps {
-                echo 'Copying OSGi modules to Liferay deploy folder...'
-                sh '''
-                    mkdir -p ${DEPLOY_DIR}
-                    find modules -type f -name "*-bundle.jar" -exec cp {} ${DEPLOY_DIR}/ \\;
-                '''
-            }
-        }
+			steps {
+				echo 'Copying artifacts to Liferay deploy folder...'
+				sh '''
+					mkdir -p ${DEPLOY_DIR}
+					find modules -type f -name "*-bundle.jar" -exec cp {} ${DEPLOY_DIR}/ \;
+				'''
+			}
+		}
+
     }
 
     post {
