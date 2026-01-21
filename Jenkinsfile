@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_DIR = "/deploy"
+        DEPLOY_NODE_1 = "/deploy-node-1"
+        DEPLOY_NODE_2 = "/deploy-node-2"
     }
 
     stages {
@@ -25,14 +26,14 @@ pipeline {
             }
         }
 
-        stage('Deploy to Liferay') {
+        stage('Deploy to Liferay Nodes') {
             steps {
-                echo 'Deploying JAR to Liferay deploy folder...'
+                echo 'Deploying JAR to BOTH nodes...'
                 sh '''
-                    echo "JARs found:"
                     ls -lh modules/**/build/libs/*.jar
 
-                    cp -v modules/**/build/libs/*.jar /deploy/
+                    cp -v modules/**/build/libs/*.jar "$DEPLOY_NODE_1"/
+                    cp -v modules/**/build/libs/*.jar "$DEPLOY_NODE_2"/
                 '''
             }
         }
@@ -40,7 +41,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build & deploy completed successfully'
+            echo 'Build & deployed to both nodes successfully'
         }
         failure {
             echo 'Build or deploy failed'
