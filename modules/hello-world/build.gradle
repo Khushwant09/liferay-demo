@@ -1,16 +1,33 @@
 plugins {
     id 'java'
-    id 'com.liferay.plugin'   // <-- ensures Liferay OSGi module build
+    id 'biz.aQute.bnd.builder' version '5.3.0'  // Liferay OSGi builder
 }
 
+// Liferay dependencies
 dependencies {
     compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+
     cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
 }
 
-// Optional: if you want gradle to always produce OSGi bundle
-tasks.withType(Jar) {
-    manifest {
-        from("$projectDir/bnd.bnd")
+// Disable default Gradle jar (caused manifest conflicts)
+tasks.named('jar') {
+    enabled = false
+}
+
+// Optional: make sure buildBundle produces the correct output
+tasks.named('buildBundle') {
+    dependsOn 'compileJava', 'processResources'
+}
+
+// Optional: include CSS build automatically
+tasks.named('build') {
+    dependsOn 'buildBundle'
+}
+
+// Liferay-specific properties (for Gradle workspace)
+liferay {
+    workspace {
+        modulesDir = file("$rootDir/modules")
     }
 }
