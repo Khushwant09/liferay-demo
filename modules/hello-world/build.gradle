@@ -1,22 +1,6 @@
 dependencies {
-    // Liferay API
-    compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
 
-    // CSS builder
-    cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
 }
 
-// Disable default Gradle jar task to avoid invalid manifest
-tasks.named('jar') {
-    enabled = false
-}
-
-// Ensure buildBundle depends on compilation
-tasks.named('buildBundle') {
-    dependsOn 'compileJava', 'processResources'
-}
-
-// Make build depend on buildBundle
-tasks.named('build') {
-    dependsOn 'buildBundle'
-}
