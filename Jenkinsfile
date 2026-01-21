@@ -7,16 +7,16 @@ pipeline {
 
     triggers {
         // Trigger on Git push (webhook)
-        githubPush() // simplified if GitHub webhook is configured
-        // pollSCM('H/2 * * * *') // optional fallback
+        githubPush() // will trigger on GitHub webhook
+        // pollSCM('H/2 * * * *') // optional fallback if webhook not configured
     }
 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'git@github.com:Khushwant09/liferay-demo.git'
-					credentialsId: 'e37faf3c-48de-4292-a211-1090299331a0'
+                    url: 'git@github.com:Khushwant09/liferay-demo.git',
+                    credentialsId: 'e37faf3c-48de-4292-a211-1090299331a0'
             }
         }
 
