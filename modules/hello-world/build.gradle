@@ -1,6 +1,16 @@
-dependencies {
-	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
-
-	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
+plugins {
+    id 'java'
+    id 'com.liferay.plugin'   // <-- ensures Liferay OSGi module build
 }
 
+dependencies {
+    compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+    cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
+}
+
+// Optional: if you want gradle to always produce OSGi bundle
+tasks.withType(Jar) {
+    manifest {
+        from("$projectDir/bnd.bnd")
+    }
+}
